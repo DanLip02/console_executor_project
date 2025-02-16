@@ -1,3 +1,7 @@
-INSERT INTO book (book_id, title, author, price, amount) 
-VALUES (NULL, 'Мастер и Маргарита', 'Булгаков М.А.', 670.99, 3);
-SELECT * FROM book
+CREATE TABLE pep (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50),
+    age INT
+);
+INSERT INTO pep (name, age) VALUES ('Alice', 25), ('Bob', 30);
+SELECT * FROM pep;
