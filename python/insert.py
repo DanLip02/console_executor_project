@@ -1,20 +1,12 @@
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 
-# Подключение к БД
-user = "postgres"
-host = "localhost"
-port = "5433"
-password = ""
-db = "ela"
-
-engine = create_engine(f"postgresql://{user}:{password}@{host}:{port}/{db}")
+from connection import *
 
 def test_query():
     try:
         with engine.connect() as connection:
-            connection.execute(text("SET search_path TO public;"))
-            result = connection.execute(text("SELECT * FROM employees;"))
+            result = connection.execute(text(query))
             rows = result.fetchall()  
             if rows:
                 for row in rows:
@@ -24,4 +16,10 @@ def test_query():
     except SQLAlchemyError as e:
         print(f"❌ Ошибка выполнения запроса: {e}")
 
+schema = 'public'
+table = 'employees'
+
+query = f"SELECT * FROM {schema}.{table}"
+
+engine = connect_to_db(user, host, port, password, db)
 test_query()

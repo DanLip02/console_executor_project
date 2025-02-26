@@ -17,6 +17,6 @@ user = "postgres"
 host = "localhost"
 port = "5433"
 password = ""
-db = "postgres"
+db = "ela"
 
-engine = connect_to_db(user, host, port, password, db)
+# engine = connect_to_db(user, host, port, password, db)
