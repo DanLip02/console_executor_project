@@ -1,9 +1,18 @@
-from sqlalchemy import create_engine, text
+from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
+from dotenv import load_dotenv
+import os
+from connection import connect_to_db
 
-from connection import *
+load_dotenv()
 
-def test_query():
+user = os.getenv("USER")
+host = os.getenv("HOST")
+port = int(os.getenv("PORT", "5433"))
+password = os.getenv("PASSWORD")
+db = os.getenv("DB")
+
+def test_query(engine):
     try:
         with engine.connect() as connection:
             result = connection.execute(text(query))
@@ -20,6 +29,7 @@ schema = 'public'
 table = 'employees'
 
 query = f"SELECT * FROM {schema}.{table}"
-
 engine = connect_to_db(user, host, port, password, db)
-test_query()
+
+if engine:
+    test_query(engine)
