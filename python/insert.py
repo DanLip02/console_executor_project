@@ -33,3 +33,4 @@ engine = connect_to_db(user, host, port, password, db)
 
 if engine:
     test_query(engine)
+    
