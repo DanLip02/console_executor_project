@@ -71,16 +71,15 @@ def delete_data(table, condition):  # Удаление данных
 
 
 def main():
-    print("Выберите операцию: вставка, обновление, удаление, вставка myfile, удаление myfile")
+    print("Выберите операцию: вставка, обновление, удаление, вставка myfile, удаление myfile, добавить элемент в файл, убрать элемент из файла")
     operation = input("Введите операцию: ").strip().lower()
 
-    if operation not in ["вставка", "обновление", "удаление", "вставка myfile", "удаление myfile"]:
+    if operation not in ["вставка", "обновление", "удаление", "вставка myfile", "удаление myfile", "добавить элемент в файл", "убрать элемент из файла"]:
         print("❌ Ошибка: Неверная операция")
         sys.exit(1)
 
     table = "users"
     columns = get_columns(table)
-    create_table()
 
     if not columns:
         print(f"❌ Ошибка: Таблица {table} не найдена.")
@@ -101,18 +100,35 @@ def main():
             update_data(table, data, condition)
 
     elif operation == "удаление":
-        condition_input = input(f"Введите условия удаления (например, name: Алиса): ").strip()
+        condition_input = input(f"Введите условия удаления (age, name): ").strip()
         condition = parse_input(condition_input, columns)
         if condition:
             delete_data(table, condition)
 
     elif operation == "вставка myfile":
+        create_table()
         file_path = input("Введите путь к файлу для загрузки: ").strip()
         excel_pull(file_path)
     elif operation == "удаление myfile":
         file_id = input("Введите ID файла для извлечения: ").strip()
         if file_id.isdigit():
             download_file(int(file_id))
+        else:
+            print("ID должен быть числом. Ошибка")
+    elif operation == "добавить элемент в файл":
+        file_id = input("Введите ID файла: ").strip()
+        new_data = input("Введите данные для добавления: ")
+        if file_id.isdigit():
+            update_file(int(file_id), new_data)
+        else:
+            print("Ошибка! Введите число!")
+    elif operation == "убрать элемент из файла":
+        file_id = input("Введите ID файла: ").strip()
+        remove = input("Введите данные для удаления: ")
+        if file_id.isdigit():
+            delete_data_from_file(int(file_id), remove)
+        else:
+            print("Ошибка! Введите число")
 
 if __name__ == "__main__":
     main()
