@@ -22,7 +22,6 @@ def create_table():
         cursor.close()
         conn.close()
 
-# Загрузка файла в базу
 def excel_pull(file_path):
     if not os.path.exists(file_path):
         print("❌ Ошибка: Файл не найден.")
@@ -41,13 +40,10 @@ def excel_pull(file_path):
         cursor.close()
         conn.close()
 
-# Извлечение файла
 def download_file(file_id):
     try:
         conn = psycopg2.connect(**DB_PARAMS)
         cursor = conn.cursor()
-
-        # Проверяем, существует ли файл с таким ID
         cursor.execute("SELECT filename FROM files WHERE id = %s", (file_id,))
         row = cursor.fetchone()
         
@@ -70,7 +66,7 @@ def update_file(file_id, new_data):
         cursor.execute("SELECT filedata FROM files WHERE id = %s", (file_id,))
         row = cursor.fetchone()
         if row:
-            existing_data = bytes(row[0])  # Преобразуем memoryview в bytes
+            existing_data = bytes(row[0])
             updated_data = existing_data + new_data.encode()  
             
             cursor.execute("UPDATE files SET filedata = %s WHERE id = %s", (updated_data, file_id))
@@ -92,8 +88,8 @@ def delete_data_from_file(file_id, data_to_remove):
         row = cursor.fetchone()
         
         if row:
-            existing_data = bytes(row[0])  # Преобразуем memoryview в bytes
-            updated_data = existing_data.replace(data_to_remove.encode(), b"")  # Удаляем часть данных
+            existing_data = bytes(row[0])
+            updated_data = existing_data.replace(data_to_remove.encode(), b"")
             
             cursor.execute("UPDATE files SET filedata = %s WHERE id = %s", (updated_data, file_id))
             conn.commit()

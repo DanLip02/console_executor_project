@@ -4,15 +4,15 @@ from sqlalchemy import text
 from conn_files import *
 
 
-def get_columns(table):  # Получаем список столбцов, исключая id
+def get_columns(table): 
     with engine.connect() as conn:
         query = text("SELECT column_name FROM information_schema.columns WHERE table_name = :table")
         result = conn.execute(query, {"table": table})
         columns = [row[0] for row in result]
-        return [col for col in columns if col.lower() != "id"]  # Исключаем id
+        return [col for col in columns if col.lower() != "id"]
 
 
-def parse_input(input_str, columns):  # ввод пользователя в словарь
+def parse_input(input_str, columns):  
     values = [item.strip() for item in input_str.split(',')]
     if len(values) != len(columns):
         print(f"❌ Ошибка: Ожидалось {len(columns)} значений, но получено {len(values)}.")
@@ -20,7 +20,7 @@ def parse_input(input_str, columns):  # ввод пользователя в с�
     return dict(zip(columns, values))
 
 
-def insert_data(table, data):  # Вставка данных
+def insert_data(table, data): 
     columns = get_columns(table)
 
     if not columns:
@@ -36,7 +36,7 @@ def insert_data(table, data):  # Вставка данных
         print("✅ Данные успешно вставлены")
 
 
-def update_data(table, data, condition):  # Обновление данных
+def update_data(table, data, condition):
     columns = get_columns(table)
 
     if not columns:
@@ -54,7 +54,7 @@ def update_data(table, data, condition):  # Обновление данных
         print("✅ Данные успешно обновлены")
 
 
-def delete_data(table, condition):  # Удаление данных
+def delete_data(table, condition):
     columns = get_columns(table)
 
     if not columns:
