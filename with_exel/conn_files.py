@@ -2,26 +2,6 @@ from connection import DB_PARAMS
 import psycopg2
 import os
 
-
-def create_table():
-    try:
-        conn = psycopg2.connect(**DB_PARAMS)
-        cursor = conn.cursor()
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS files (
-                id SERIAL PRIMARY KEY,
-                filename TEXT,
-                filedata BYTEA
-            )
-        """)
-        conn.commit()
-        print("✅ Таблица создана!")
-    except psycopg2.Error as e:
-        print(f"❌ Ошибка базы данных: {e}")
-    finally:
-        cursor.close()
-        conn.close()
-
 def excel_pull(file_path):
     if not os.path.exists(file_path):
         print("❌ Ошибка: Файл не найден.")
@@ -79,6 +59,7 @@ def update_file(file_id, new_data):
     finally:
         cursor.close()
         conn.close()
+
 
 def delete_data_from_file(file_id, data_to_remove):
     try:
