@@ -143,9 +143,10 @@ def main():
         else:
             print("❌ Ошибка: неверный ввод. Введите 'таблица' или 'данные'.")
 
-    elif operation == "вставка myfile":
-        create_table()
+    elif operation == "Вставка myfile":
+        name = input("Введите имя новой таблицы: ").strip()
         file_path = input("Введите путь к файлу для загрузки: ").strip()
+        create_table_from_file(name, file_path)
         excel_pull(file_path)
     elif operation == "удаление myfile":
         file_id = input("Введите ID файла для извлечения: ").strip()
@@ -154,7 +155,7 @@ def main():
         else:
             print("ID должен быть числом. Ошибка")
 
-    elif operation == "добавить элемент в файл":
+    elif operation == "Добавить элемент в файл":
         file_id = input("Введите ID файла: ").strip()
         new_data = input("Введите данные для добавления: ")
         if file_id.isdigit():
@@ -162,7 +163,7 @@ def main():
         else:
             print("Ошибка! Введите число!")
 
-    elif operation == "убрать элемент из файла":
+    elif operation == "Убрать элемент из файла":
         file_id = input("Введите ID файла: ").strip()
         remove = input("Введите данные для удаления: ")
         if file_id.isdigit():
