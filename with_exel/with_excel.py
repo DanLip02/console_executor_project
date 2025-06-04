@@ -2,6 +2,7 @@ import sys
 from connection import engine
 from sqlalchemy import text
 from conn_files import *
+from tables_functions import *
 
 
 def get_columns(table): 
@@ -71,25 +72,39 @@ def delete_data(table, condition):
 
 
 def main():
-    print("Выберите операцию: вставка, обновление, удаление, вставка myfile, удаление myfile, добавить элемент в файл, убрать элемент из файла")
-    operation = input("Введите операцию: ").strip().lower()
+    print("Выберите операцию:\n Вставка\n Обновление\n Удаление\n Вставка myfile\n Удаление myfile\n Добавить элемент в файл\n Убрать элемент из файла\n")
+    operation = input("Введите операцию: ").strip()
 
-    if operation not in ["вставка", "обновление", "удаление", "вставка myfile", "удаление myfile", "добавить элемент в файл", "убрать элемент из файла"]:
+    allowed_operations = ["Вставка", "Обновление", "Удаление", "Вставка myfile", "Удаление myfile", "Добавить элемент в файл", "Убрать элемент из файла"]
+    
+    if operation not in allowed_operations:
         print("❌ Ошибка: Неверная операция")
         sys.exit(1)
 
-    table = "users"
-    columns = get_columns(table)
+    if operation == "Вставка":
+        table = input("Введите название существующей таблицы (если хотите создать новую, нажмите Enter): ").strip()
 
-    if not columns:
-        print(f"❌ Ошибка: Таблица {table} не найдена.")
-        sys.exit(1)
+        if not table:  
+            table = input("Введите имя новой таблицы: ").strip()
+            create_table(table)  
 
-    if operation == "вставка":
+        columns = get_columns(table)  
+
+        if not columns:
+            print(f"❌ Ошибка: Не удалось получить колонки таблицы '{table}'. Возможно, она не была создана.")
+            sys.exit(1)
+
         data_input = input(f"Введите данные ({', '.join(columns)}): ").strip()
-        data = parse_input(data_input, columns)
-        if data:
-            insert_data(table, data)
+        values = [item.strip() for item in data_input.split(",")]
+        # data = parse_input(data_input, columns)
+        # if data:
+        #     insert_data(table, data)
+        if len(values) != len(columns):
+            print(f"❌ Ошибка: Ожидалось {len(columns)} значений, но получено {len(values)}.")
+            sys.exit(1)
+
+        data = dict(zip(columns, values))
+        insert_data(table, data)
 
     elif operation == "обновление":
         data_input = input(f"Введите новые данные ({', '.join(columns)}): ").strip()
@@ -99,15 +114,39 @@ def main():
         if data and condition:
             update_data(table, data, condition)
 
-    elif operation == "удаление":
-        condition_input = input(f"Введите условия удаления (age, name): ").strip()
-        condition = parse_input(condition_input, columns)
-        if condition:
-            delete_data(table, condition)
 
-    elif operation == "вставка myfile":
-        create_table()
+    elif operation == "Удаление":
+        table = input("Введите название таблицы: ").strip()
+
+        if not table:
+            print("❌ Ошибка: имя таблицы не может быть пустым.")
+            sys.exit(1)
+
+        delete_option = input(f"Удалить всю таблицу '{table}' или только данные? (введите 'таблица' или 'данные'): ").strip().lower()
+
+        if delete_option == "таблица":
+            confirm = input(f"Вы уверены, что хотите удалить таблицу '{table}'? (да/нет): ").strip().lower()
+            if confirm == "да":
+                delete_table(table)
+                print(f"✅ Таблица '{table}' удалена.")
+            else:
+                print("❌ Операция отменена.")
+        elif delete_option == "данные":
+            condition_input = input("Введите условия удаления (например, id=5): ").strip()
+            condition = parse_input(condition_input, get_columns(table))
+
+            if condition:
+                delete_data(table, condition)
+                print(f"✅ Данные из таблицы '{table}' удалены по условию: {condition_input}")
+            else:
+                print("❌ Ошибка: условия удаления не заданы.")
+        else:
+            print("❌ Ошибка: неверный ввод. Введите 'таблица' или 'данные'.")
+
+    elif operation == "Вставка myfile":
+        name = input("Введите имя новой таблицы: ").strip()
         file_path = input("Введите путь к файлу для загрузки: ").strip()
+        create_table_from_file(name, file_path)
         excel_pull(file_path)
     elif operation == "удаление myfile":
         file_id = input("Введите ID файла для извлечения: ").strip()
@@ -115,14 +154,16 @@ def main():
             download_file(int(file_id))
         else:
             print("ID должен быть числом. Ошибка")
-    elif operation == "добавить элемент в файл":
+
+    elif operation == "Добавить элемент в файл":
         file_id = input("Введите ID файла: ").strip()
         new_data = input("Введите данные для добавления: ")
         if file_id.isdigit():
             update_file(int(file_id), new_data)
         else:
             print("Ошибка! Введите число!")
-    elif operation == "убрать элемент из файла":
+
+    elif operation == "Убрать элемент из файла":
         file_id = input("Введите ID файла: ").strip()
         remove = input("Введите данные для удаления: ")
         if file_id.isdigit():
